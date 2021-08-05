@@ -11,12 +11,11 @@ module Cmds
     dir.mkdir
 
     log = Utils::Log.new
-    objects.each do |obj|
-      next if obj =~ /^org-/
-      dest = dir.join("#{obj}.json")
+    export_obj = -> obj, args: [], suffix: "" do
+      dest = dir.join("#{obj}#{suffix}.json")
       log.info "writing to #{dest.relative_path_from OUT}"
       dest.open 'w' do |f|
-        IO.popen ["bw", "list", obj], 'r' do |p|
+        IO.popen ["bw", "list", obj, *args], 'r' do |p|
           IO.copy_stream p, f
         end
         $?.success? or raise "bw list #{obj} failed"
@@ -26,6 +25,12 @@ module Cmds
         or raise "gpg --encrypt failed"
       dest.delete
     end
+
+    objects.each do |obj|
+      next if obj =~ /^org-/
+      export_obj.(obj)
+    end
+    export_obj.("items", args: ["--trash"], suffix: "_trash")
   end
 
   def self.objects
