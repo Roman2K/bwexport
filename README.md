@@ -16,7 +16,7 @@ bwexport:
   volumes:
     - "bwexport:/home/node/.config/Bitwarden CLI"
     - $HOME/mnt/drive/backup/bitwarden:/home/node/out
-    - ../conf/bwexport/roman.gpg:/home/node/pub.gpg:ro
+    - ../conf/bwexport/gpg-roman.asc:/home/node/pub.gpg:ro
   environment:
     BW_SESSION: "…"
   command: ["export", "Roman"]
